@@ -1,0 +1,129 @@
+<div class="row container-fluid overflow-auto mt-5 mb-2">
+    <div class="col-md-3   border border-secondary gray-gradient rounded-3 box shadow m-4" style="min-height: 400px ; min-width: 10px;">
+        <h4 class="text-center mt-3 bg-light border border-secondary rounded-3 shadow-lg fw-bolder">Select Dates </h4>
+        <ul class="text-light">
+            <li *ngFor="let to of todo"><a class="nav-link cursor link-light mouse" (click)="onClick(to.date)">{{to.date}} <span class="btn btn-outline-danger btn-sm material-icons float-end" (click)="deleteToDo(to.id)">remove</span></a></li>
+        </ul>
+        <div>
+            <div class="text-center">
+                <button class="btn btn-sm btn-outline-warning" (click)="showForm()">New</button>
+            </div>
+            <div *ngIf="isNew" class="row">
+                <form [formGroup]="addToDosForm" class="col-md-10 offset-md-1 mb-2 mt-3 border border-secondary shadow-lg gray-gradient">
+                    <div class="mt-3">
+                        <input type="number" placeholder="Enter Id" formControlName="id">
+                    </div><br>
+                    <div class="mt-3">
+                        <input type="date" formControlName="date">
+                    </div><br>
+                    <div class="form-group" formArrayName="tasks">
+                        <label for="tasks" class="text-light">Tasks</label>
+                        <div *ngFor="let control of addToDosForm.controls.tasks['controls']; let i=index">
+                            <span>
+                                <input type="text" placeholder="Enter Your Tasks here.." [formControlName]="i">
+                                <span *ngIf="i>=1" class="material-icons text-danger btn-outline-danger btn-sm btn mce-btn-small float-end" (click)="remove(i)">remove</span><br><br>
+                            </span>
+                        </div><br><br>
+                    </div>
+                    <button class="btn btn-group btn-sm btn-outline-warning mb-3 me-2" (click)="addToDo(addToDosForm)">Create TO-DO</button>
+                    <button class="btn btn-group btn-sm btn-outline-warning mb-3 material-icons" (click)="addNewToDo()">add_box</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 border border-secondary rounded-3 box shadow-lg m-4" style="min-height: 400px ; min-width: 10px;">
+        <h4 class="text-center bg-light mt-3 border border-secondary rounded-3 shadow-lg fw-bolder">Tasks</h4>
+        <!-- <h4 class="mt-3 text-light">Select The Date To See Your To-Do's</h4> -->
+        <div class="text-light row">
+            <div *ngFor="let obj of temp" class="col-md-10 offset-md-1">
+                <h2>{{obj.date}}</h2>
+                <ul class=" mt-4">
+                    <li *ngFor="let task of obj.tasks;let i=index" class="mt-3">
+                        <span class="text-light border rounded-3 p-1">{{task}}</span>
+                        <span (click)="deleteTask(i,obj.id)" class="material-icons mx-2 btn-sm btn btn-outline-danger">delete</span>
+                        <span>
+                            <button (click)="editTask(i,obj.id)" type="button" class="btn material-icons btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">edit_note</button>
+                        </span>
+                    </li><br>
+                </ul>
+                <div class="text-end mt-2">
+                    <button class="btn btn-outline-warning" (click)="addNewTask(obj.id)" data-bs-toggle="modal" data-bs-target="#addModal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                      </svg></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- model -->
+
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Launch demo modal
+  </button> -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-secondary">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bolder text-light" id="exampleModalLabel">Update Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mx-2">
+                    <form #updateForm="ngForm" (ngSubmit)="onsubmitUpdate()">
+                        <input type="text" [(ngModel)]="updateSelect" name="updateSelect" value="{{select}}" class="form-control" placeholder="Enter Value To be Updated">
+
+                        <div class="text-end mt-2"><button type="submit" class="btn btn-primary">Update Task</button></div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-secondary">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bolder text-light" id="addModalLabel">Add New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mx-2">
+                    <form #updateForm="ngForm" (ngSubmit)="onsubmitAdd()">
+                        <input type="text" [(ngModel)]="newTask" name="newTask" class="form-control" placeholder="Enter New Task">
+
+                        <div class="text-end mt-2"><button type="submit" class="btn btn-primary">Add New Task</button></div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- This Are Some Extra Code Used To Understand WorkFlow of arrays and Objects -->
+
+<!-- <div class="row">
+    <div class="col-md-4 m-3 bg-light">
+        <ul *ngFor="let to of todo;let i=index">
+            <li>{{to.date}}</li>
+            <li>{{to.Task1}}</li>
+            <li>{{toDo.date}}</li>
+
+
+        </ul>
+        <ul *ngFor="let to of temp">
+            <li>{{to.date}}</li>
+            <li *ngFor="let a of temp.tasks">{{a}}</li>
+        </ul>
+    </div>
+</div> -->
